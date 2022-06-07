@@ -188,11 +188,11 @@ public class LauncherReleaseDataService
 
     private async Task PrecacheReleaseFiles(Release release)
     {
-        var fullNupkgName = $"XIVLauncher-{release.TagName}-full.nupkg";
+        var fullNupkgName = $"XIVLauncherCN-{release.TagName}-full.nupkg";
         await _cache.CacheFile(fullNupkgName, release.TagName, GetDownloadUrlForRelease(release, fullNupkgName),
             FileCacheService.CachedFile.FileCategory.Release);
 
-        var deltaNupkgName = $"XIVLauncher-{release.TagName}-delta.nupkg";
+        var deltaNupkgName = $"XIVLauncherCN-{release.TagName}-delta.nupkg";
         await _cache.CacheFile(deltaNupkgName, release.TagName, GetDownloadUrlForRelease(release, deltaNupkgName),
             FileCacheService.CachedFile.FileCategory.Release);
 
