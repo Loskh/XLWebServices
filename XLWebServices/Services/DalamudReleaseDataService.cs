@@ -58,7 +58,7 @@ public class DalamudReleaseDataService
 
         foreach (var content in tree)
         {
-            if (content.Type != ContentType.Dir || content.Name == ".github")
+            if (content.Type != ContentType.Dir || content.Name == ".github"|| content.Name == "runtimehashes")
                 continue;
 
             releasesDict.Add(content.Name, await GetDalamudRelease(content.Name, repoOwner, repoName, sha));
@@ -91,6 +91,7 @@ public class DalamudReleaseDataService
     private async Task<DalamudVersion> GetDalamudRelease(string trackName, string repoOwner, string repoName, string sha)
     {
         if (!string.IsNullOrEmpty(trackName))
+
             trackName = $"{trackName}/";
 
         var repoBase =

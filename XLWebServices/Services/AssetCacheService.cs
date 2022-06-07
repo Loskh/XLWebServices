@@ -29,7 +29,7 @@ public class AssetCacheService
         var repoOwner = this.config["GitHub:AssetRepository:Owner"];
         var repoName = this.config["GitHub:AssetRepository:Name"];
 
-        var commit = await this.github.Client.Repository.Commit.Get(repoOwner, repoName, "master");
+        var commit = await this.github.Client.Repository.Commit.Get(repoOwner, repoName, "cn");
         var sha = commit.Sha;
 
         var assetsInfoText = await this.github.Client.Repository.Content.GetRawContentByRef(repoOwner, repoName, "asset.json", sha);
