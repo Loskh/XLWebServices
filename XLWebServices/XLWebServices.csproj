@@ -9,16 +9,11 @@
     <ItemGroup>
         <PackageReference Include="Discord.Net.Webhook" Version="3.3.2" />
         <PackageReference Include="LibGit2Sharp" Version="0.27.0-preview-0175" />
+        <PackageReference Include="Octokit" Version="0.51.0" />
         <PackageReference Include="prometheus-net" Version="5.0.2" />
         <PackageReference Include="prometheus-net.AspNetCore" Version="5.0.2" />
         <PackageReference Include="StackExchange.Redis" Version="2.2.88" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Reference Include="Octokit, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\octokit.net\Octokit\bin\Debug\netstandard2.0\Octokit.dll</HintPath>
-      </Reference>
     </ItemGroup>
 
     <Target Name="GetGitHash" BeforeTargets="WriteGitHash" Condition="'$(BuildHash)' == ''">
@@ -27,7 +22,7 @@
             <VerFile>$(IntermediateOutputPath)gitver</VerFile>
         </PropertyGroup>
         <!-- write the hash to the temp file.-->
-        <Exec Command="git -C &quot;$(ProjectDir.Replace('\','\\'))&quot; describe --long --always --dirty &gt; $(VerFile)" />
+        <Exec Command="git -c &quot;$(ProjectDir.Replace('\','\\'))&quot; describe --long --always --dirty &gt; $(VerFile)" />
         <!-- read the version into the GitVersion itemGroup-->
         <ReadLinesFromFile File="$(VerFile)">
             <Output TaskParameter="Lines" ItemName="GitVersion" />
