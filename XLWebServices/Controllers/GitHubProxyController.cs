@@ -77,10 +77,10 @@ public class GitHubProxyController: ControllerBase
         {
             var allowedFileNames = new[] {
                 "Setup.exe",
-                $"XIVLauncher-{this._launcherReleaseData.CachedRelease.TagName}-delta.nupkg",
-                $"XIVLauncher-{this._launcherReleaseData.CachedRelease.TagName}-full.nupkg",
-                $"XIVLauncher-{this._launcherReleaseData.CachedPrerelease.TagName}-delta.nupkg",
-                $"XIVLauncher-{this._launcherReleaseData.CachedPrerelease.TagName}-full.nupkg",
+                $"XIVLauncherCN-{this._launcherReleaseData.CachedRelease.TagName}-delta.nupkg",
+                $"XIVLauncherCN-{this._launcherReleaseData.CachedRelease.TagName}-full.nupkg",
+                $"XIVLauncherCN-{this._launcherReleaseData.CachedPrerelease.TagName}-delta.nupkg",
+                $"XIVLauncherCN-{this._launcherReleaseData.CachedPrerelease.TagName}-full.nupkg",
                 "CHANGELOG.txt",
             };
 
