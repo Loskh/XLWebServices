@@ -96,11 +96,10 @@ public class FileCacheService
         response.EnsureSuccessStatusCode();
         var content = await response.Content.ReadAsByteArrayAsync();
 
-        var id = Hash.GetSha256Hash(content);
-
         var fileName = response.Content.Headers.ContentDisposition?.FileName;
-        fileName ??= string.Join('_', url.Split('/').TakeLast(2));
-        id = $"{id}_{fileName}";
+        fileName ??= url.Split('/').Last();
+
+        var id = GetFileId(content, string.Join('_', url.Split('/').TakeLast(2)));
 
         var cachedPath = new FileInfo(Path.Combine(this.cacheDirectory.FullName, id));
         if (!cachedPath.Exists)
@@ -108,6 +107,14 @@ public class FileCacheService
             await File.WriteAllBytesAsync(cachedPath.FullName, content);
         }
         return new CachedFile(id, cacheKey, cachedPath, content.Length, response.Content.Headers.ContentType?.MediaType, fileName, category, url);
+    }
+
+    private string GetFileId(byte[] content, string name)
+    {
+        var fileName = Path.GetFileNameWithoutExtension(name);
+        var extName = Path.GetExtension(name);
+        var id = Hash.GetSha256Hash(content);
+        return $"{fileName}.{id}{extName}";
     }
 
     public class CachedFile
@@ -139,7 +146,7 @@ public class FileCacheService
         public FileCategory Category { get; private set; }
 
         public long Length { get; private set; }
-        
+
         public string OriginalUrl { get; private set; }
 
         public enum FileCategory
