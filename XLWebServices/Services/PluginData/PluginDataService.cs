@@ -126,7 +126,7 @@ public class PluginDataService
 
                 manifest.DownloadLinkInstall = string.Format(downloadTemplate, manifest.InternalName, false, apiLevel);
                 manifest.DownloadLinkTesting = string.Format(downloadTemplate, manifest.InternalName, true, apiLevel);
-                manifest.DownloadLinkUpdate = string.Format(updateTemplate, manifest.InternalName, "plugins", apiLevel);
+                manifest.DownloadLinkUpdate = string.Format(updateTemplate, manifest.InternalName, false, apiLevel);
 
                 noProxyManifest.DownloadLinkInstall = noProxyManifest.DownloadLinkUpdate = string.Format(updateTemplate, "plugins", manifest.InternalName, apiLevel);
                 noProxyManifest.DownloadLinkTesting = string.Format(updateTemplate, "testing", manifest.InternalName, apiLevel);

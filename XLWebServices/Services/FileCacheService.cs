@@ -98,15 +98,15 @@ public class FileCacheService
 
         var id = Hash.GetSha256Hash(content);
 
+        var fileName = response.Content.Headers.ContentDisposition?.FileName;
+        fileName ??= string.Join('_', url.Split('/').TakeLast(2));
+        id = $"{id}_{fileName}";
+
         var cachedPath = new FileInfo(Path.Combine(this.cacheDirectory.FullName, id));
         if (!cachedPath.Exists)
         {
             await File.WriteAllBytesAsync(cachedPath.FullName, content);
         }
-
-        var fileName = response.Content.Headers.ContentDisposition?.FileName;
-        fileName ??= string.Join('_', url.Split('/').TakeLast(2));
-        id = $"{id}_{fileName}";
         return new CachedFile(id, cacheKey, cachedPath, content.Length, response.Content.Headers.ContentType?.MediaType, fileName, category, url);
     }
 
