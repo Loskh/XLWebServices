@@ -49,7 +49,7 @@ public class PluginController : ControllerBase
         await this.redis.IncrementCount(internalName);
         await this.redis.IncrementCount(RedisCumulativeKey);
 
-        const string githubPath = "https://raw.githubusercontent.com/goatcorp/DalamudPlugins/{0}/{1}/{2}/latest.zip";
+        const string githubPath = "https://raw.githubusercontent.com/ottercorp/DalamudPlugins/{0}/{1}/{2}/latest.zip";
         var folder = isTesting ? "testing" : "plugins";
         var version = isTesting && manifest.TestingAssemblyVersion != null ? manifest.TestingAssemblyVersion : manifest.AssemblyVersion;
         var cachedFile = await this.cache.CacheFile(internalName, $"{version}-{folder}-{this.pluginData.RepoSha}",
