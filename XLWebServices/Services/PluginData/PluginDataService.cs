@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json.Linq;
 using Octokit;
 
 namespace XLWebServices.Services.PluginData;
@@ -13,6 +14,8 @@ public class PluginDataService
     private readonly DiscordHookService _discord;
 
     private readonly HttpClient _client;
+    
+    private Dictionary<string, string> _translation;
 
     public IReadOnlyList<PluginManifest>? PluginMaster { get; private set; }
     public IReadOnlyList<PluginManifest>? PluginMasterNoProxy { get; private set; }
@@ -209,10 +212,38 @@ public class PluginDataService
     {
         var folder = isTesting ? "testing" : "plugins";
         var manifestUrl = $"https://raw.githubusercontent.com/{repoOwner}/{repoName}/{sha}/{folder}/{pluginName}/{pluginName}.json";
-        return await _client.GetFromJsonAsync<PluginManifest>(manifestUrl, new JsonSerializerOptions
+        var manifest = await _client.GetFromJsonAsync<PluginManifest>(manifestUrl, new JsonSerializerOptions
         {
             AllowTrailingCommas = true, // Haplo's manifest has trailing commas
         });
+        if (_translation is null)
+        {
+            GetTranslation();
+        }
+        if (_translation.ContainsKey(manifest.InternalName))
+        {
+            manifest.Description = _translation[manifest.InternalName];
+        }
+        if (_translation.ContainsKey($"{manifest.InternalName}-Punchline"))
+        {
+            manifest.Punchline = _translation[$"{manifest.InternalName}-Punchline"];
+        }
+        return manifest;
+    }
+
+    private async void GetTranslation(string lang="cn")
+    {
+        var repoOwner = _configuration["GitHub:PluginRepository:Owner"];
+        var repoName = _configuration["GitHub:PluginRepository:Name"];
+        var commit = await _github.Client.Repository.Commit.Get(repoOwner, repoName, _configuration["PluginRepoBranch"]);
+        var sha = commit.Sha;
+        _translation = new Dictionary<string, string>();
+        var translationUrl = $"https://raw.githubusercontent.com/{repoOwner}/{repoName}/{sha}/translations/{lang}.json";
+        var translations = await _client.GetFromJsonAsync<JObject>(translationUrl);
+        foreach (var kv in translations!)
+        {
+            _translation[kv.Key] = kv.Value!.ToString();
+        }
     }
 
     private class BannedPlugin
