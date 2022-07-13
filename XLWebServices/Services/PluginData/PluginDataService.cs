@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
 using Octokit;
@@ -216,34 +217,43 @@ public class PluginDataService
         {
             AllowTrailingCommas = true, // Haplo's manifest has trailing commas
         });
-        if (_translation is null)
+        var translation = _translation;
+        if (translation is null)
         {
-            GetTranslation();
+            translation = await GetTranslation();
         }
-        if (_translation.ContainsKey(manifest.InternalName))
+        if (translation.ContainsKey(manifest.InternalName))
         {
-            manifest.Description = _translation[manifest.InternalName];
+            manifest.Description = translation[manifest.InternalName];
         }
-        if (_translation.ContainsKey($"{manifest.InternalName}-Punchline"))
+        if (translation.ContainsKey($"{manifest.InternalName}-Punchline"))
         {
-            manifest.Punchline = _translation[$"{manifest.InternalName}-Punchline"];
+            manifest.Punchline = translation[$"{manifest.InternalName}-Punchline"];
         }
         return manifest;
     }
 
-    private async void GetTranslation(string lang="cn")
+    private async Task<Dictionary<string, string>> GetTranslation(string lang="cn")
     {
+        if (_translation is not null)
+        {
+            return _translation;
+        }
         var repoOwner = _configuration["GitHub:PluginRepository:Owner"];
         var repoName = _configuration["GitHub:PluginRepository:Name"];
         var commit = await _github.Client.Repository.Commit.Get(repoOwner, repoName, _configuration["PluginRepoBranch"]);
         var sha = commit.Sha;
         _translation = new Dictionary<string, string>();
         var translationUrl = $"https://raw.githubusercontent.com/{repoOwner}/{repoName}/{sha}/translations/{lang}.json";
-        var translations = await _client.GetFromJsonAsync<JObject>(translationUrl);
-        foreach (var kv in translations!)
+        var translations =  _client.GetFromJsonAsync<JsonObject>(translationUrl, new JsonSerializerOptions
+        {
+            AllowTrailingCommas = true,
+        }).Result;
+        foreach (var kv in translations)
         {
             _translation[kv.Key] = kv.Value!.ToString();
         }
+        return _translation;
     }
 
     private class BannedPlugin
