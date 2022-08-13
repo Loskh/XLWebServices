@@ -99,12 +99,12 @@ public class DalamudReleaseDataService
 
         var releaseJson = JsonSerializer.Deserialize<DalamudVersion>(Encoding.UTF8.GetString(
             await this.github.Client.Repository.Content.GetRawContentByRef(repoOwner, repoName, $"{trackName}version", sha)));
-        var releaseUrl = $"{repoBase}/{sha}/{trackName}latest.zip";
+        var releaseUrl = $"{repoBase}/{sha}/{trackName}latest.7z";
 
         if (releaseJson == null)
             throw new Exception($"Failed to get release data for {trackName}");
 
-        var releaseCache = await this.cache.CacheFile("latest.zip", $"{releaseJson.AssemblyVersion}-{trackName}", releaseUrl,
+        var releaseCache = await this.cache.CacheFile("latest.7z", $"{releaseJson.AssemblyVersion}-{trackName}", releaseUrl,
             FileCacheService.CachedFile.FileCategory.Dalamud);
 
         releaseJson.Track = string.IsNullOrEmpty(trackName) ? "release" : trackName;
